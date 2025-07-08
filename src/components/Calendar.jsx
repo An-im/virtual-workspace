@@ -7,7 +7,7 @@ export default function Calendar() {
   const [selectedDate, setSelectedDate] = useState(new Date())
 
   return (
-    <div className="bg-white rounded-lg shadow p-4">
+    <div className="bg-white rounded-lg shadow p-4 max-w-[400px] mx-auto w-full">
         <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
           <CalendarDays className="w-5 h-5 text-blue-500" />
           Calendar
