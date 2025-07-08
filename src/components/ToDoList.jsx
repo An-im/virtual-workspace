@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { ListTodo } from 'lucide-react'
 
 export default function ToDoList() {
   const [tasks, setTasks] = useState(() => {
@@ -28,15 +29,18 @@ export default function ToDoList() {
     setTasks(tasks.filter(task => task.id !== id))
   }
 
-  return (
+  return (  
     <div className="bg-white rounded-lg shadow p-4">
-      <h2 className="text-lg font-bold mb-4">To-Do List</h2>
-      
-      <div className="flex gap-2 mb-4">
+      <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+        <ListTodo className="w-5 h-5 text-blue-500" />
+        To Do List
+      </h2>
+
+      <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2 mb-4">
         <input
           type="text"
-          className="flex-1 border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring focus:ring-blue-300"
-          placeholder="Agregar tarea..."
+          className="w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring focus:ring-blue-300"
+          placeholder="Add a task..."
           value={newTask}
           onChange={(e) => setNewTask(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && addTask()}
@@ -45,7 +49,7 @@ export default function ToDoList() {
           onClick={addTask}
           className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition"
         >
-          Agregar
+          Add
         </button>
       </div>
 
@@ -70,7 +74,7 @@ export default function ToDoList() {
           </li>
         ))}
         {tasks.length === 0 && (
-          <li className="text-sm text-gray-500">No hay tareas pendientes.</li>
+          <li className="text-sm text-gray-500">No tasks yet.</li>
         )}
       </ul>
     </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { Timer } from 'lucide-react'
 
 const WORK_TIME = 25 * 60 // 25 minutos en segundos
 
@@ -46,7 +47,11 @@ export default function PomodoroTimer() {
 
   return (
     <div className="bg-white rounded-lg shadow p-4 text-center">
-      <h2 className="text-lg font-bold mb-4">Pomodoro Timer</h2>
+      <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+        <Timer className="w-5 h-5 text-blue-500" />
+        Pomodoro Timer
+      </h2>
+
       <div className="text-4xl font-mono text-blue-600 mb-4">
         {formatTime(secondsLeft)}
       </div>
@@ -54,15 +59,15 @@ export default function PomodoroTimer() {
       <div className="flex justify-center gap-2">
         {!isRunning ? (
           <button onClick={startTimer} className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-            Iniciar
+            Start
           </button>
         ) : (
           <button onClick={pauseTimer} className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">
-            Pausar
+            Pause
           </button>
         )}
         <button onClick={resetTimer} className="bg-gray-400 text-white px-3 py-1 rounded hover:bg-gray-500">
-          Reiniciar
+          Restart
         </button>
       </div>
     </div>

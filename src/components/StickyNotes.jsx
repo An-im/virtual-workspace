@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { StickyNote } from 'lucide-react'
 
 export default function StickyNotes() {
   const [notes, setNotes] = useState(() => {
@@ -27,13 +28,16 @@ export default function StickyNotes() {
 
   return (
     <div className="bg-yellow-50 rounded-lg shadow p-4">
-      <h2 className="text-lg font-bold mb-4">Sticky Notes</h2>
+        <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+          <StickyNote className="w-5 h-5 text-yellow-500" />
+          Sticky Notes
+        </h2>
 
       <button
         onClick={addNote}
         className="mb-4 bg-yellow-400 text-yellow-900 px-3 py-1 rounded hover:bg-yellow-300 transition"
       >
-        + Nueva nota
+        + New Note
       </button>
 
       <div className="grid gap-4">
@@ -42,7 +46,7 @@ export default function StickyNotes() {
             <textarea
               value={note.content}
               onChange={(e) => updateNote(note.id, e.target.value)}
-              placeholder="Escribí algo..."
+              placeholder="Write something..."
               className="w-full h-24 p-2 rounded resize-none bg-yellow-50 text-gray-700 border border-yellow-300 focus:outline-none focus:ring focus:ring-yellow-400"
             />
             <button
@@ -55,7 +59,7 @@ export default function StickyNotes() {
           </div>
         ))}
         {notes.length === 0 && (
-          <p className="text-sm text-gray-500">No hay notas creadas.</p>
+          <p className="text-sm text-gray-500">No notes yet.</p>
         )}
       </div>
     </div>
