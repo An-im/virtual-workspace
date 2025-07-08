@@ -1,12 +1,41 @@
-# React + Vite
+# Virtual Workspace 🧠💻
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Virtual Workspace is a minimalist digital desktop built with React and TailwindCSS. It helps you organize your day with a clean and simple interface — perfect for boosting productivity.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- ✅ **To-Do List**: Add, complete, and delete tasks. Tasks are saved by date using `localStorage`.
+- 📅 **Calendar**: Select a date to view tasks for that day.
+- ⏱ **Pomodoro Timer**: 25/5 timer with session counter and notification sound.
+- 📝 **Sticky Notes**: Quick notes not tied to any date — just like Post-its.
+- 📊 **Daily Summary**: See how many tasks you've completed and pomodoros you've done for the selected day.
 
-## Expanding the ESLint configuration
+## ⚙️ Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React + Vite
+- TailwindCSS
+- Lucide Icons
+- React Datepicker
+- `localStorage` for local persistence
+
+## 🌐 Live Demo
+
+👉 [Check it out here](https://an-im.github.io/virtual-workspace)
+
+## 💻 Repository
+
+📁 [View the code on GitHub](https://github.com/An-im/virtual-workspace)
+
+## 📌 Notes
+
+This project was created as part of my personal portfolio. I plan to keep improving it by adding features like tags, filters, and analytics in the future.
+
+## 👩‍💻 About Me
+
+Hi! I’m **Antonella Imarisio**, a creative and detail-oriented developer with a background in administration and design. I'm passionate about building clean, user-friendly interfaces and tools that actually help people.
+
+- 🔗 [Portfolio](https://an-im.github.io/portfolio)
+- 💼 [LinkedIn](https://www.linkedin.com/in/antonellaimarisio)
+
+---
+
