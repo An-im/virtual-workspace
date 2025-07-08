@@ -11,6 +11,7 @@ export default function ToDoList() {
   })
 
   const [newTask, setNewTask] = useState('')
+  const [newTag, setNewTag] = useState('Trabajo') // Etiqueta por defecto
 
   useEffect(() => {
     const stored = localStorage.getItem(`todo-${selectedDateString}`)
@@ -18,33 +19,32 @@ export default function ToDoList() {
   }, [selectedDateString])
 
   useEffect(() => {
-  if (tasks.length > 0 || localStorage.getItem(`todo-${selectedDateString}`)) {
-    localStorage.setItem(`todo-${selectedDateString}`, JSON.stringify(tasks))
-    window.dispatchEvent(new Event('tasks-updated'))
-  }
-}, [tasks])
-
+    if (tasks.length > 0 || localStorage.getItem(`todo-${selectedDateString}`)) {
+      localStorage.setItem(`todo-${selectedDateString}`, JSON.stringify(tasks))
+      window.dispatchEvent(new Event('tasks-updated'))
+    }
+  }, [tasks, selectedDateString])
 
   const addTask = () => {
     if (newTask.trim() === '') return
-    const newItem = { id: Date.now(), text: newTask, done: false }
+    const newItem = { id: Date.now(), text: newTask, done: false, tag: newTag }
     setTasks([newItem, ...tasks])
     setNewTask('')
   }
 
   const toggleTask = (id) => {
-  const updated = tasks.map(task =>
-    task.id === id ? { ...task, done: !task.done } : task
-  )
-  setTasks(updated)
-  window.dispatchEvent(new Event('tasks-updated'))
-}
+    const updated = tasks.map(task =>
+      task.id === id ? { ...task, done: !task.done } : task
+    )
+    setTasks(updated)
+    window.dispatchEvent(new Event('tasks-updated'))
+  }
 
-const deleteTask = (id) => {
-  const updated = tasks.filter(task => task.id !== id)
-  setTasks(updated)
-  window.dispatchEvent(new Event('tasks-updated'))
-}
+  const deleteTask = (id) => {
+    const updated = tasks.filter(task => task.id !== id)
+    setTasks(updated)
+    window.dispatchEvent(new Event('tasks-updated'))
+  }
 
   return (
     <div id="todo" className="bg-white rounded-lg shadow p-4">
@@ -55,10 +55,11 @@ const deleteTask = (id) => {
 
       <p className="text-sm text-gray-500 mb-2">
         Tasks for <span className="font-semibold">
-        {new Date(selectedDateString).toLocaleDateString('es-AR')} </span>
+          {new Date(selectedDateString).toLocaleDateString('es-AR')}
+        </span>
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2 mb-4">
+      <div className="grid sm:grid-cols-[1fr_120px_auto] gap-2 mb-4">
         <input
           type="text"
           className="w-full border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring focus:ring-blue-300"
@@ -67,6 +68,16 @@ const deleteTask = (id) => {
           onChange={(e) => setNewTask(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && addTask()}
         />
+        <select
+          value={newTag}
+          onChange={(e) => setNewTag(e.target.value)}
+          className="border border-gray-300 rounded px-2 py-1"
+        >
+          <option>Trabajo</option>
+          <option>Personal</option>
+          <option>Estudio</option>
+          <option>Otro</option>
+        </select>
         <button
           onClick={addTask}
           className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition"
@@ -85,7 +96,7 @@ const deleteTask = (id) => {
               className={`flex-1 cursor-pointer ${task.done ? 'line-through text-gray-400' : ''}`}
               onClick={() => toggleTask(task.id)}
             >
-              {task.text}
+              {task.text} <span className="ml-2 text-xs text-blue-600 bg-blue-100 px-2 py-0.5 rounded">{task.tag}</span>
             </span>
             <button
               onClick={() => deleteTask(task.id)}
