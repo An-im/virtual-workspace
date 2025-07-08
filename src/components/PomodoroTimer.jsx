@@ -1,11 +1,21 @@
 import { useState, useEffect, useRef } from 'react'
 import { Timer } from 'lucide-react'
+import { useDate } from '../context/DateContext'
 
-const WORK_TIME = 25 * 60 // 25 minutos en segundos
+const WORK_TIME = 25 * 60
+const BREAK_TIME = 5 * 60
 
 export default function PomodoroTimer() {
+  const { selectedDateString } = useDate()
+
   const [secondsLeft, setSecondsLeft] = useState(WORK_TIME)
   const [isRunning, setIsRunning] = useState(false)
+  const [isBreak, setIsBreak] = useState(false)
+  const [sessions, setSessions] = useState(() => {
+    const stored = JSON.parse(localStorage.getItem('pomodoro-sessions')) || {}
+    return stored[selectedDateString] || 0
+  })
+
   const timerRef = useRef(null)
 
   const formatTime = (secs) => {
@@ -21,6 +31,26 @@ export default function PomodoroTimer() {
           if (prev <= 1) {
             clearInterval(timerRef.current)
             setIsRunning(false)
+
+            if (isBreak) {
+              setSecondsLeft(WORK_TIME)
+              setIsBreak(false)
+            } else {
+              // ✅ Incrementar y guardar sesión
+              const newCount = sessions + 1
+              setSessions(newCount)
+
+              const stored = JSON.parse(localStorage.getItem('pomodoro-sessions')) || {}
+              stored[selectedDateString] = newCount
+              localStorage.setItem('pomodoro-sessions', JSON.stringify(stored))
+
+              // ✅ Disparar evento global
+              window.dispatchEvent(new Event('pomodoro-updated'))
+
+              setSecondsLeft(BREAK_TIME)
+              setIsBreak(true)
+            }
+
             return 0
           }
           return prev - 1
@@ -29,7 +59,7 @@ export default function PomodoroTimer() {
     }
 
     return () => clearInterval(timerRef.current)
-  }, [isRunning])
+  }, [isRunning, isBreak, sessions, selectedDateString])
 
   const startTimer = () => {
     if (secondsLeft > 0) setIsRunning(true)
@@ -43,6 +73,7 @@ export default function PomodoroTimer() {
   const resetTimer = () => {
     pauseTimer()
     setSecondsLeft(WORK_TIME)
+    setIsBreak(false)
   }
 
   return (
@@ -52,9 +83,17 @@ export default function PomodoroTimer() {
         Pomodoro Timer
       </h2>
 
+      <p className="text-sm text-gray-500 mb-1">
+        {isBreak ? 'Break time 🧘‍♀️' : 'Focus session 💻'}
+      </p>
+
       <div className="text-4xl font-mono text-blue-600 mb-4">
         {formatTime(secondsLeft)}
       </div>
+
+      <p className="text-sm text-gray-500 mb-4">
+        Sessions completed: <span className="font-semibold">{sessions}</span>
+      </p>
 
       <div className="flex justify-center gap-2">
         {!isRunning ? (

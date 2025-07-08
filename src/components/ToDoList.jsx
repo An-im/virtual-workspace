@@ -1,16 +1,29 @@
 import { useState, useEffect } from 'react'
 import { ListTodo } from 'lucide-react'
+import { useDate } from '../context/DateContext'
 
 export default function ToDoList() {
+  const { selectedDateString } = useDate()
+
   const [tasks, setTasks] = useState(() => {
-    const stored = localStorage.getItem('todo-tasks')
+    const stored = localStorage.getItem(`todo-${selectedDateString}`)
     return stored ? JSON.parse(stored) : []
   })
+
   const [newTask, setNewTask] = useState('')
 
   useEffect(() => {
-    localStorage.setItem('todo-tasks', JSON.stringify(tasks))
-  }, [tasks])
+    const stored = localStorage.getItem(`todo-${selectedDateString}`)
+    setTasks(stored ? JSON.parse(stored) : [])
+  }, [selectedDateString])
+
+  useEffect(() => {
+  if (tasks.length > 0 || localStorage.getItem(`todo-${selectedDateString}`)) {
+    localStorage.setItem(`todo-${selectedDateString}`, JSON.stringify(tasks))
+    window.dispatchEvent(new Event('tasks-updated'))
+  }
+}, [tasks])
+
 
   const addTask = () => {
     if (newTask.trim() === '') return
@@ -20,21 +33,30 @@ export default function ToDoList() {
   }
 
   const toggleTask = (id) => {
-    setTasks(tasks.map(task =>
-      task.id === id ? { ...task, done: !task.done } : task
-    ))
-  }
+  const updated = tasks.map(task =>
+    task.id === id ? { ...task, done: !task.done } : task
+  )
+  setTasks(updated)
+  window.dispatchEvent(new Event('tasks-updated'))
+}
 
-  const deleteTask = (id) => {
-    setTasks(tasks.filter(task => task.id !== id))
-  }
+const deleteTask = (id) => {
+  const updated = tasks.filter(task => task.id !== id)
+  setTasks(updated)
+  window.dispatchEvent(new Event('tasks-updated'))
+}
 
-  return (  
-    <div className="bg-white rounded-lg shadow p-4">
+  return (
+    <div id="todo" className="bg-white rounded-lg shadow p-4">
       <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
         <ListTodo className="w-5 h-5 text-blue-500" />
         To Do List
       </h2>
+
+      <p className="text-sm text-gray-500 mb-2">
+        Tasks for <span className="font-semibold">
+        {new Date(selectedDateString).toLocaleDateString('es-AR')} </span>
+      </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2 mb-4">
         <input
