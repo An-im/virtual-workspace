@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Timer } from 'lucide-react'
 import { useDate } from '../context/DateContext'
+import notificationSound from '../assets/notification.mp3'
 
 const WORK_TIME = 25 * 60
 const BREAK_TIME = 5 * 60
@@ -17,6 +18,7 @@ export default function PomodoroTimer() {
   })
 
   const timerRef = useRef(null)
+  const audioRef = useRef(null)
 
   const formatTime = (secs) => {
     const minutes = String(Math.floor(secs / 60)).padStart(2, '0')
@@ -24,44 +26,21 @@ export default function PomodoroTimer() {
     return `${minutes}:${seconds}`
   }
 
-  useEffect(() => {
-    if (isRunning) {
-      timerRef.current = setInterval(() => {
-        setSecondsLeft(prev => {
-          if (prev <= 1) {
-            clearInterval(timerRef.current)
-            setIsRunning(false)
-
-            if (isBreak) {
-              setSecondsLeft(WORK_TIME)
-              setIsBreak(false)
-            } else {
-              // ✅ Incrementar y guardar sesión
-              const newCount = sessions + 1
-              setSessions(newCount)
-
-              const stored = JSON.parse(localStorage.getItem('pomodoro-sessions')) || {}
-              stored[selectedDateString] = newCount
-              localStorage.setItem('pomodoro-sessions', JSON.stringify(stored))
-
-              // ✅ Disparar evento global
-              window.dispatchEvent(new Event('pomodoro-updated'))
-
-              setSecondsLeft(BREAK_TIME)
-              setIsBreak(true)
-            }
-
-            return 0
-          }
-          return prev - 1
-        })
-      }, 1000)
+  const playSound = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0
+      audioRef.current.play().catch((err) => {
+        console.warn('No se pudo reproducir el sonido:', err)
+      })
     }
-
-    return () => clearInterval(timerRef.current)
-  }, [isRunning, isBreak, sessions, selectedDateString])
+  }
 
   const startTimer = () => {
+    // ⚠️ Crear el audio en un contexto permitido
+    if (!audioRef.current) {
+      audioRef.current = new Audio(notificationSound)
+    }
+
     if (secondsLeft > 0) setIsRunning(true)
   }
 
@@ -75,6 +54,44 @@ export default function PomodoroTimer() {
     setSecondsLeft(WORK_TIME)
     setIsBreak(false)
   }
+
+  useEffect(() => {
+    if (isRunning) {
+      timerRef.current = setInterval(() => {
+        setSecondsLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current)
+          setIsRunning(false)
+
+        if (isBreak) {
+          playSound() // 🔔 Sonido al terminar break
+          setSecondsLeft(WORK_TIME)
+          setIsBreak(false)
+        } else {
+          playSound() // 🔔 Sonido al terminar trabajo
+          const newCount = sessions + 1
+          setSessions(newCount)
+
+          const stored = JSON.parse(localStorage.getItem('pomodoro-sessions')) || {}
+          stored[selectedDateString] = newCount
+          localStorage.setItem('pomodoro-sessions', JSON.stringify(stored))
+
+          window.dispatchEvent(new Event('pomodoro-updated'))
+
+          setSecondsLeft(BREAK_TIME)
+          setIsBreak(true)
+        }
+
+        return 0
+      }
+      return prev - 1
+    })
+
+      }, 1000)
+    }
+
+    return () => clearInterval(timerRef.current)
+  }, [isRunning, isBreak, sessions, selectedDateString])
 
   return (
     <div className="bg-white rounded-lg shadow p-4 text-center">
